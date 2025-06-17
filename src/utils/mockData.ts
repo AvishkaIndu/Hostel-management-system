@@ -30,66 +30,64 @@ export const mockUsers: User[] = [
 ];
 
 export const mockRooms: Room[] = [
-  // Ground floor rooms (15 rooms)
-  ...Array.from({ length: 15 }, (_, i) => ({
-    id: `room_g_${i + 1}`,
-    roomNumber: `G${String(i + 1).padStart(2, '0')}`,
-    floor: 0,
-    capacity: 2,
-    currentOccupancy: Math.floor(Math.random() * 3),
-    furniture: [
-      { id: `bed_g_${i + 1}_1`, type: 'bed' as const, condition: 'good' as const },
-      { id: `bed_g_${i + 1}_2`, type: 'bed' as const, condition: 'excellent' as const },
-      { id: `desk_g_${i + 1}`, type: 'desk' as const, condition: 'good' as const },
-      { id: `chair_g_${i + 1}`, type: 'chair' as const, condition: 'fair' as const },
-    ],
-    status: ['available', 'occupied', 'maintenance'][Math.floor(Math.random() * 3)] as any,
-  })),
-  // 2nd floor rooms (28 rooms)
-  ...Array.from({ length: 28 }, (_, i) => ({
-    id: `room_2_${i + 1}`,
-    roomNumber: `2${String(i + 1).padStart(2, '0')}`,
-    floor: 2,
-    capacity: 2,
-    currentOccupancy: Math.floor(Math.random() * 3),
-    furniture: [
-      { id: `bed_2_${i + 1}_1`, type: 'bed' as const, condition: 'good' as const },
-      { id: `bed_2_${i + 1}_2`, type: 'bed' as const, condition: 'excellent' as const },
-      { id: `desk_2_${i + 1}`, type: 'desk' as const, condition: 'good' as const },
-      { id: `chair_2_${i + 1}`, type: 'chair' as const, condition: 'fair' as const },
-    ],
-    status: ['available', 'occupied', 'maintenance'][Math.floor(Math.random() * 3)] as any,
-  })),
-  // 3rd floor rooms (28 rooms)
-  ...Array.from({ length: 28 }, (_, i) => ({
-    id: `room_3_${i + 1}`,
-    roomNumber: `3${String(i + 1).padStart(2, '0')}`,
-    floor: 3,
-    capacity: 2,
-    currentOccupancy: Math.floor(Math.random() * 3),
-    furniture: [
-      { id: `bed_3_${i + 1}_1`, type: 'bed' as const, condition: 'good' as const },
-      { id: `bed_3_${i + 1}_2`, type: 'bed' as const, condition: 'excellent' as const },
-      { id: `desk_3_${i + 1}`, type: 'desk' as const, condition: 'good' as const },
-      { id: `chair_3_${i + 1}`, type: 'chair' as const, condition: 'fair' as const },
-    ],
-    status: ['available', 'occupied', 'maintenance'][Math.floor(Math.random() * 3)] as any,
-  })),
-  // 4th floor rooms (27 rooms)
-  ...Array.from({ length: 27 }, (_, i) => ({
-    id: `room_4_${i + 1}`,
-    roomNumber: `4${String(i + 1).padStart(2, '0')}`,
-    floor: 4,
-    capacity: 2,
-    currentOccupancy: Math.floor(Math.random() * 3),
-    furniture: [
-      { id: `bed_4_${i + 1}_1`, type: 'bed' as const, condition: 'good' as const },
-      { id: `bed_4_${i + 1}_2`, type: 'bed' as const, condition: 'excellent' as const },
-      { id: `desk_4_${i + 1}`, type: 'desk' as const, condition: 'good' as const },
-      { id: `chair_4_${i + 1}`, type: 'chair' as const, condition: 'fair' as const },
-    ],
-    status: ['available', 'occupied', 'maintenance'][Math.floor(Math.random() * 3)] as any,
-  })),
+  // Generate 98 rooms across 4 floors
+  ...Array.from({ length: 98 }, (_, i) => {
+    const roomNum = i + 1;
+    const floor = Math.floor(i / 25) + 1; // Distribute across floors 1-4
+    
+    return {
+      id: `room_${roomNum}`,
+      roomNumber: `${roomNum}`,
+      floor: floor,
+      capacity: 2,
+      currentOccupancy: Math.floor(Math.random() * 3),
+      furniture: [
+        { 
+          id: `bed_${roomNum}_1`, 
+          type: 'bed' as const, 
+          condition: 'good' as const,
+          quantity: 1,
+          addedDate: new Date('2024-01-01')
+        },
+        { 
+          id: `bed_${roomNum}_2`, 
+          type: 'bed' as const, 
+          condition: 'excellent' as const,
+          quantity: 1,
+          addedDate: new Date('2024-01-01')
+        },
+        { 
+          id: `mattress_${roomNum}_1`, 
+          type: 'mattress' as const, 
+          condition: 'good' as const,
+          quantity: 2,
+          addedDate: new Date('2024-01-01')
+        },
+        { 
+          id: `desk_${roomNum}`, 
+          type: 'desk' as const, 
+          condition: 'good' as const,
+          quantity: 1,
+          addedDate: new Date('2024-01-01')
+        },
+        { 
+          id: `chair_${roomNum}`, 
+          type: 'chair' as const, 
+          condition: 'fair' as const,
+          quantity: 2,
+          addedDate: new Date('2024-01-01')
+        },
+        { 
+          id: `wardrobe_${roomNum}`, 
+          type: 'wardrobe' as const, 
+          condition: 'good' as const,
+          quantity: 1,
+          addedDate: new Date('2024-01-01')
+        },
+      ],
+      status: ['available', 'occupied', 'maintenance'][Math.floor(Math.random() * 3)] as any,
+    };
+  }),
 ];
 
 export const mockReports: Report[] = [
@@ -159,7 +157,7 @@ export const mockRoomAssignments: RoomAssignment[] = [
   {
     id: '1',
     studentId: '1',
-    roomId: 'room_g_1',
+    roomId: 'room_1',
     assignedDate: new Date('2023-09-01'),
     academicYear: '2023-24',
     keyStatus: 'with_student',

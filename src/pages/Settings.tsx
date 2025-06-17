@@ -10,11 +10,13 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useNotifications } from '../context/NotificationsContext';
 import ProfilePhotoUpload from '../components/Common/ProfilePhotoUpload';
 
 const Settings: React.FC = () => {
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { addNotification } = useNotifications();
   const [activeTab, setActiveTab] = useState('profile');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -48,34 +50,55 @@ const Settings: React.FC = () => {
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'security', label: 'Security', icon: Shield },
     { id: 'appearance', label: 'Appearance', icon: Palette },
-  ];
-  const handleProfileSave = () => {
+  ];  const handleProfileSave = () => {
     // Handle profile save
     console.log('Profile saved:', profileData);
-    // Show success message
-    alert('Profile updated successfully!');
+    
+    addNotification({
+      title: 'Profile Updated',
+      message: 'Your profile has been updated successfully.',
+      type: 'success'
+    });
   };
 
   const handleNotificationSave = () => {
     // Handle notification save
     console.log('Notifications saved:', notificationSettings);
-    alert('Notification preferences saved!');
+    
+    addNotification({
+      title: 'Settings Saved',
+      message: 'Notification preferences have been saved.',
+      type: 'success'
+    });
   };
 
   const handleSecuritySave = () => {
     // Handle security save
     console.log('Security saved:', securitySettings);
-    alert('Security settings updated!');
+    
+    addNotification({
+      title: 'Security Updated',
+      message: 'Security settings have been updated.',
+      type: 'success'
+    });
   };
 
   const handlePasswordChange = () => {
     // Handle password change
-    alert('Password changed successfully!');
+    addNotification({
+      title: 'Password Changed',
+      message: 'Your password has been changed successfully.',
+      type: 'success'
+    });
   };
 
   const handleAppearanceSave = () => {
     // Handle appearance save
-    alert('Appearance settings saved!');
+    addNotification({
+      title: 'Appearance Saved',
+      message: 'Your appearance preferences have been saved.',
+      type: 'success'
+    });
   };
 
   return (    <div className="p-6 space-y-8">

@@ -13,6 +13,8 @@ const Layout: React.FC = () => {
         return 'Dashboard';
       case '/rooms':
         return 'Rooms';
+      case '/room-inventory':
+        return 'Room Inventory';
       case '/students':
         return 'Students';
       case '/reports':

@@ -15,11 +15,12 @@ import {
 } from 'lucide-react';
 import { mockReports, mockUsers, mockRooms } from '../utils/mockData';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationsContext';
 import Modal from '../components/Common/Modal';
-import ConfirmDialog from '../components/Common/ConfirmDialog';
 
 const Reports: React.FC = () => {
   const { user } = useAuth();
+  const { addNotification } = useNotifications();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedPriority, setSelectedPriority] = useState<string>('all');
@@ -30,6 +31,9 @@ const Reports: React.FC = () => {
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [editingReport, setEditingReport] = useState<any>(null);
 
+  // State management for reports
+  const [reports, setReports] = useState(mockReports);
+
   // New report form state
   const [newReport, setNewReport] = useState({
     title: '',
@@ -37,10 +41,40 @@ const Reports: React.FC = () => {
     type: 'electrical',
     priority: 'medium',
     roomId: '',  });
-
   // Handler functions
   const handleAddReport = () => {
-    console.log('Adding new report:', newReport);
+    if (!newReport.title.trim() || !newReport.description.trim()) {
+      addNotification({
+        title: 'Validation Error',
+        message: 'Please fill in all required fields.',
+        type: 'error'
+      });
+      return;
+    }
+
+    // Create new report
+    const report = {
+      id: (reports.length + 1).toString(),
+      studentId: user?.id || '1',
+      roomId: newReport.roomId,
+      type: newReport.type as 'electrical' | 'plumbing' | 'furniture' | 'cleanliness' | 'other',
+      title: newReport.title,
+      description: newReport.description,
+      priority: newReport.priority as 'low' | 'medium' | 'high' | 'urgent',
+      status: 'pending' as const,
+      submittedDate: new Date(),
+    };
+
+    // Add to reports
+    setReports(prevReports => [...prevReports, report]);
+
+    // Add notification
+    addNotification({
+      title: 'Report Submitted',
+      message: 'Your report has been submitted successfully.',
+      type: 'success'
+    });
+
     setShowAddModal(false);
     setNewReport({
       title: '',
@@ -60,14 +94,37 @@ const Reports: React.FC = () => {
     setEditingReport({ ...report });
     setShowEditModal(true);
   };
-
   const handleUpdateReport = () => {
-    console.log('Updating report:', editingReport);
+    if (!editingReport) return;
+
+    if (!editingReport.title.trim() || !editingReport.description.trim()) {
+      addNotification({
+        title: 'Validation Error',
+        message: 'Please fill in all required fields.',
+        type: 'error'
+      });
+      return;
+    }
+
+    // Update report
+    setReports(prevReports => 
+      prevReports.map(report => 
+        report.id === editingReport.id ? editingReport : report
+      )
+    );
+
+    // Add notification
+    addNotification({
+      title: 'Report Updated',
+      message: 'The report has been updated successfully.',
+      type: 'success'
+    });
+
     setShowEditModal(false);
     setEditingReport(null);
   };
 
-  const filteredReports = mockReports.filter(report => {
+  const filteredReports = reports.filter(report => {
     const matchesSearch = 
       report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       report.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -133,12 +190,11 @@ const Reports: React.FC = () => {
     const room = mockRooms.find(r => r.id === roomId);
     return room ? room.roomNumber : 'Unknown';
   };
-
   const stats = {
-    total: mockReports.length,
-    pending: mockReports.filter(r => r.status === 'pending').length,
-    inProgress: mockReports.filter(r => r.status === 'in_progress').length,
-    resolved: mockReports.filter(r => r.status === 'resolved').length,
+    total: reports.length,
+    pending: reports.filter(r => r.status === 'pending').length,
+    inProgress: reports.filter(r => r.status === 'in_progress').length,
+    resolved: reports.filter(r => r.status === 'resolved').length,
   };
 
   return (

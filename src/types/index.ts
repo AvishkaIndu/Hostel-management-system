@@ -23,10 +23,13 @@ export interface Room {
 
 export interface FurnitureItem {
   id: string;
-  type: 'bed' | 'mattress' | 'desk' | 'chair' | 'wardrobe' | 'other';
+  type: 'bed' | 'mattress' | 'desk' | 'chair' | 'wardrobe' | 'clothes_rack' | 'cupboard' | 'other';
   condition: 'excellent' | 'good' | 'fair' | 'poor' | 'broken';
+  quantity: number;
   lastMaintenance?: Date;
   notes?: string;
+  addedBy?: string;
+  addedDate?: Date;
 }
 
 export interface RoomAssignment {
@@ -36,6 +39,7 @@ export interface RoomAssignment {
   assignedDate: Date;
   academicYear: string;
   keyStatus: 'with_student' | 'with_warden' | 'lost';
+  lastHandoverDate?: Date;
 }
 
 export interface Report {

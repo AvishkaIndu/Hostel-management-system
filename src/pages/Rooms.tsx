@@ -11,9 +11,11 @@ import {
   XCircle
 } from 'lucide-react';
 import { mockRooms } from '../utils/mockData';
+import { useNotifications } from '../context/NotificationsContext';
 import Modal from '../components/Common/Modal';
 
 const Rooms: React.FC = () => {
+  const { addNotification } = useNotifications();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFloor, setSelectedFloor] = useState<number | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -23,7 +25,10 @@ const Rooms: React.FC = () => {
   const [selectedRoom, setSelectedRoom] = useState<any>(null);
   const [editingRoom, setEditingRoom] = useState<any>(null);
 
-  // New room form state
+  // State management for rooms
+  const [rooms, setRooms] = useState(mockRooms);
+
+  // New room form state - Update room numbering to 1-98
   const [newRoom, setNewRoom] = useState({
     roomNumber: '',
     floor: 0,
@@ -33,7 +38,58 @@ const Rooms: React.FC = () => {
 
   // Handler functions
   const handleAddRoom = () => {
-    console.log('Adding new room:', newRoom);
+    if (!newRoom.roomNumber.trim()) {
+      addNotification({
+        title: 'Validation Error',
+        message: 'Please enter a room number.',
+        type: 'error'
+      });
+      return;
+    }
+
+    // Validate room number is between 1-98
+    const roomNum = parseInt(newRoom.roomNumber);
+    if (isNaN(roomNum) || roomNum < 1 || roomNum > 98) {
+      addNotification({
+        title: 'Validation Error',
+        message: 'Room number must be between 1 and 98.',
+        type: 'error'
+      });
+      return;
+    }
+
+    // Check if room number already exists
+    const existingRoom = rooms.find(room => room.roomNumber === newRoom.roomNumber);
+    if (existingRoom) {
+      addNotification({
+        title: 'Validation Error',
+        message: 'Room number already exists.',
+        type: 'error'
+      });
+      return;
+    }
+
+    // Create new room with furniture
+    const room = {
+      id: `room_${newRoom.floor}_${newRoom.roomNumber}`,
+      roomNumber: newRoom.roomNumber,
+      floor: newRoom.floor,
+      capacity: newRoom.capacity,
+      currentOccupancy: 0,
+      status: newRoom.status as 'available' | 'occupied' | 'maintenance' | 'reserved',
+      furniture: [] as any[], // Empty initially, students will add later
+    };
+
+    // Add to rooms
+    setRooms(prevRooms => [...prevRooms, room]);
+
+    // Add notification
+    addNotification({
+      title: 'Room Added',
+      message: `Room ${newRoom.roomNumber} has been added successfully.`,
+      type: 'success'
+    });
+
     setShowAddModal(false);
     setNewRoom({
       roomNumber: '',
@@ -54,7 +110,53 @@ const Rooms: React.FC = () => {
   };
 
   const handleUpdateRoom = () => {
-    console.log('Updating room:', editingRoom);
+    if (!editingRoom) return;
+
+    if (!editingRoom.roomNumber.trim()) {
+      addNotification({
+        title: 'Validation Error',
+        message: 'Please enter a room number.',
+        type: 'error'
+      });
+      return;
+    }
+
+    // Validate room number is between 1-98
+    const roomNum = parseInt(editingRoom.roomNumber);
+    if (isNaN(roomNum) || roomNum < 1 || roomNum > 98) {
+      addNotification({
+        title: 'Validation Error',
+        message: 'Room number must be between 1 and 98.',
+        type: 'error'
+      });
+      return;
+    }
+
+    // Check if room number already exists (exclude current room)
+    const existingRoom = rooms.find(room => room.roomNumber === editingRoom.roomNumber && room.id !== editingRoom.id);
+    if (existingRoom) {
+      addNotification({
+        title: 'Validation Error',
+        message: 'Room number already exists.',
+        type: 'error'
+      });
+      return;
+    }
+
+    // Update room
+    setRooms(prevRooms => 
+      prevRooms.map(room => 
+        room.id === editingRoom.id ? { ...editingRoom, status: editingRoom.status as 'available' | 'occupied' | 'maintenance' | 'reserved' } : room
+      )
+    );
+
+    // Add notification
+    addNotification({
+      title: 'Room Updated',
+      message: `Room ${editingRoom.roomNumber} has been updated successfully.`,
+      type: 'success'
+    });
+
     setShowEditModal(false);
     setEditingRoom(null);
   };

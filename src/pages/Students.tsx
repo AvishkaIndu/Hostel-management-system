@@ -10,25 +10,14 @@ import {
   Phone,
   MapPin,
   GraduationCap,
-  AlertCircle,
-  Save,
-  X
+  AlertCircle
 } from 'lucide-react';
 import { mockUsers, mockRoomAssignments, mockRooms } from '../utils/mockData';
+import { useNotifications } from '../context/NotificationsContext';
 import Modal from '../components/Common/Modal';
 
-interface Student {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  studentId?: string;
-  phoneNumber?: string;
-  emergencyContact?: string;
-}
-
 const Students: React.FC = () => {
+  const { addNotification } = useNotifications();
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -44,11 +33,42 @@ const Students: React.FC = () => {
     studentId: '',
     phoneNumber: '',
     emergencyContact: '',  });
+  // State management for students
+  const [students, setStudents] = useState(mockUsers.filter(user => user.role === 'student'));
 
   // Handler functions
   const handleAddStudent = () => {
-    console.log('Adding new student:', newStudent);
-    // Here you would make an API call to add the student
+    if (!newStudent.firstName.trim() || !newStudent.lastName.trim() || !newStudent.email.trim() || !newStudent.studentId.trim()) {
+      addNotification({
+        title: 'Validation Error',
+        message: 'Please fill in all required fields.',
+        type: 'error'
+      });
+      return;
+    }
+
+    // Create new student
+    const student = {
+      id: (students.length + 1).toString(),
+      firstName: newStudent.firstName,
+      lastName: newStudent.lastName,
+      email: newStudent.email,
+      studentId: newStudent.studentId,
+      phoneNumber: newStudent.phoneNumber,
+      emergencyContact: newStudent.emergencyContact,
+      role: 'student' as const,
+    };
+
+    // Add to students
+    setStudents(prevStudents => [...prevStudents, student]);
+
+    // Add notification
+    addNotification({
+      title: 'Student Added',
+      message: `${newStudent.firstName} ${newStudent.lastName} has been added successfully.`,
+      type: 'success'
+    });
+
     setShowAddModal(false);
     setNewStudent({
       firstName: '',
@@ -69,17 +89,37 @@ const Students: React.FC = () => {
     setSelectedStudent(student);
     setShowViewModal(true);
   };
-
   const handleUpdateStudent = () => {
-    console.log('Updating student:', editingStudent);
-    // Here you would make an API call to update the student
+    if (!editingStudent) return;
+
+    if (!editingStudent.firstName.trim() || !editingStudent.lastName.trim() || !editingStudent.email.trim()) {
+      addNotification({
+        title: 'Validation Error',
+        message: 'Please fill in all required fields.',
+        type: 'error'
+      });
+      return;
+    }
+
+    // Update student
+    setStudents(prevStudents => 
+      prevStudents.map(student => 
+        student.id === editingStudent.id ? editingStudent : student
+      )
+    );
+
+    // Add notification
+    addNotification({
+      title: 'Student Updated',
+      message: `${editingStudent.firstName} ${editingStudent.lastName} has been updated successfully.`,
+      type: 'success'
+    });
+
     setShowEditModal(false);
     setEditingStudent(null);
   };
 
-  // Get students only
-  const students = mockUsers.filter(user => user.role === 'student');
-
+  // Remove the duplicate students declaration - use the state one instead
   const filteredStudents = students.filter(student => {
     const matchesSearch = 
       student.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||

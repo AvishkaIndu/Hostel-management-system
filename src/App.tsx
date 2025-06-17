@@ -7,6 +7,7 @@ import LoginForm from './components/Auth/LoginForm';
 import Layout from './components/Layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Rooms from './pages/Rooms';
+import RoomInventory from './pages/RoomInventory';
 import Students from './pages/Students';
 import Reports from './pages/Reports';
 import Requests from './pages/Requests';
@@ -34,6 +35,7 @@ const AppContent: React.FC = () => {
         }>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="rooms" element={<Rooms />} />
+          <Route path="room-inventory" element={<RoomInventory />} />
           <Route path="students" element={<Students />} />
           <Route path="reports" element={<Reports />} />
           <Route path="requests" element={<Requests />} />

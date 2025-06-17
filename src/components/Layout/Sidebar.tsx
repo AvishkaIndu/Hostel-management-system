@@ -9,7 +9,8 @@ import {
   Key, 
   Bell, 
   Settings,
-  LogOut
+  LogOut,
+  Package
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -20,6 +21,7 @@ const Sidebar: React.FC = () => {
   const navigationItems = [
     { path: '/dashboard', icon: Home, label: 'Dashboard' },
     { path: '/rooms', icon: Building, label: 'Rooms', roles: ['sub_warden', 'welfare_officer'] },
+    { path: '/room-inventory', icon: Package, label: 'Room Inventory', roles: ['sub_warden', 'welfare_officer'] },
     { path: '/students', icon: Users, label: 'Students', roles: ['sub_warden', 'welfare_officer'] },
     { path: '/reports', icon: FileText, label: 'Reports' },
     { path: '/requests', icon: MessageSquare, label: 'Requests' },

@@ -12,10 +12,16 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationsContext';
 import { mockRooms, mockReports, mockRoomRequests, mockAnnouncements } from '../utils/mockData';
+import StudentDashboard from './StudentDashboard';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const { addNotification } = useNotifications();
+
+  // If user is a student, show student dashboard
+  if (user?.role === 'student') {
+    return <StudentDashboard />;
+  }
 
   // Calculate statistics
   const totalRooms = mockRooms.length;
@@ -103,9 +109,7 @@ const Dashboard: React.FC = () => {
               Welcome back, {user?.firstName}! 👋
             </h1>
             <p className="text-blue-100 dark:text-blue-200 text-lg">
-              {user?.role === 'student' 
-                ? 'Check your room status and submit any maintenance requests.'
-                : 'Here\'s an overview of today\'s hostel operations.'}
+              Here's an overview of today's hostel operations.
             </p>
           </div>
           <div className="hidden md:block">
